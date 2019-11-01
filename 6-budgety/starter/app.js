@@ -31,23 +31,27 @@ var UIController = (function () {
         inputButton: '.add__btn' 
     }
     return {
+        getDOMStr: function() {
+            return DOMStrings;
+        },
         getInput: function() {
             return {
                 type: document.querySelector(DOMStrings.inputType).value,
                 description: document.querySelector(DOMStrings.inputDescription).value,
                 value: document.querySelector(DOMStrings.inputValue).value
             }
-        },
-        getDOMStr: function() {
-            return DOMStrings;
         }
     }
 })();
 
 var controller = (function (budgetCtrl, UICtrl) {
+    
+    var ctrlAddItem = function () {
+        console.log(UICtrl.getInput());
+    }
 
     var setupEventListeners = function(){
-        var domStr = UIController.getDOMStr();
+        var domStr = UICtrl.getDOMStr();
         
         document.querySelector(domStr.inputButton).addEventListener('click', ctrlAddItem);
     
@@ -56,10 +60,6 @@ var controller = (function (budgetCtrl, UICtrl) {
                 ctrlAddItem();
             }
         });
-    }
-
-    var ctrlAddItem = function () {
-        console.log(UIController.getInput());
     }
 
     return {
