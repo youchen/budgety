@@ -1,5 +1,5 @@
 // Model
-var budgetController = (function () {
+var budgetModel = (function () {
     var Expense = function(id, description, value){
         this.id = id;
         this.description = description;
@@ -13,7 +13,7 @@ var budgetController = (function () {
     }
 
     var data = {
-        total: {
+        sum: {
             exp: 0,
             inc: 0
         },
@@ -25,7 +25,7 @@ var budgetController = (function () {
 
     return {
         addItem: function(type, des, val) {
-            var newItem, ID;
+            var newItemObj, ID;
 
             // Getting ID
             if (data.allItems[type].length === 0){
@@ -36,14 +36,14 @@ var budgetController = (function () {
 
             // Create new Item Obj
             if (type === 'exp'){
-                newItem = new Expense(ID, des, val);
+                newItemObj = new Expense(ID, des, val);
             } else if (type === 'inc'){
-                newItem = new Income(ID, des, val);
+                newItemObj = new Income(ID, des, val);
             }
 
             // Add into the Data Structure
-            data.allItems[type].push(newItem);
-            return newItem;
+            data.allItems[type].push(newItemObj);
+            return newItemObj;
         },
         testing: function() {
             console.log(data);
@@ -52,18 +52,20 @@ var budgetController = (function () {
 })();
 
 // View
-var UIController = (function () {
+var UIView = (function () {
     var DOMStrings = {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
-        inputButton: '.add__btn' 
+        inputButton: '.add__btn',
+        incomeContainer: '.income__list',
+        expenseContainer: '.expenses__list',
     }
     return {
         getDOMStr: function() {
             return DOMStrings;
         },
-        getInput: function() {
+        getInputObj: function() {
             return {
                 type: document.querySelector(DOMStrings.inputType).value,
                 description: document.querySelector(DOMStrings.inputDescription).value,
@@ -76,11 +78,11 @@ var UIController = (function () {
             if (type === 'inc'){
                 htmlTemplate = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 
-                container = document.querySelector('.income__list');
+                container = document.querySelector(DOMStrings.incomeContainer);
             } else if (type === 'exp'){
                 htmlTemplate = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 
-                container = document.querySelector('.expenses__list');
+                container = document.querySelector(DOMStrings.expenseContainer);
             }
 
             html = htmlTemplate.replace('%id%', itemObj.id);
@@ -93,22 +95,22 @@ var UIController = (function () {
 })();
 
 // Control
-var controller = (function (budgetCtrl, UICtrl) {
+var controller = (function (bdtModel, uiViw) {
     
-    var ctrlAddItem = function () {
-        var userInput = UICtrl.getInput();
-        var newItem = budgetCtrl.addItem(userInput.type, userInput.description, userInput.value);
-        UIController.render(newItem, userInput.type);
+    var addItem = function () {
+        var userInput = uiViw.getInputObj();
+        var newItemObj = bdtModel.addItem(userInput.type, userInput.description, userInput.value);
+        uiViw.render(newItemObj, userInput.type);
     }
 
     var setupEventListeners = function(){
-        var domStr = UICtrl.getDOMStr();
+        var domStr = uiViw.getDOMStr();
         
-        document.querySelector(domStr.inputButton).addEventListener('click', ctrlAddItem);
+        document.querySelector(domStr.inputButton).addEventListener('click', addItem);
     
         document.addEventListener('keypress', function(event){
             if (event.keyCode === 13 || event.which === 13) {
-                ctrlAddItem();
+                addItem();
             }
         });
     }
@@ -119,7 +121,7 @@ var controller = (function (budgetCtrl, UICtrl) {
             setupEventListeners();
         }
     };
-})(budgetController, UIController);
+})(budgetModel, UIView);
 
 
 controller.init();
