@@ -1,3 +1,4 @@
+// Model
 var budgetController = (function () {
     var Expense = function(id, description, value){
         this.id = id;
@@ -50,6 +51,7 @@ var budgetController = (function () {
     }
 })();
 
+// View
 var UIController = (function () {
     var DOMStrings = {
         inputType: '.add__type',
@@ -67,15 +69,36 @@ var UIController = (function () {
                 description: document.querySelector(DOMStrings.inputDescription).value,
                 value: document.querySelector(DOMStrings.inputValue).value
             }
+        },
+        render: function(itemObj, type) {
+            var htmlTemplate, html, container;
+
+            if (type === 'inc'){
+                htmlTemplate = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+
+                container = document.querySelector('.income__list');
+            } else if (type === 'exp'){
+                htmlTemplate = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+
+                container = document.querySelector('.expenses__list');
+            }
+
+            html = htmlTemplate.replace('%id%', itemObj.id);
+            html = html.replace('%description%', itemObj.description);
+            html = html.replace('%value%', itemObj.value);
+
+            container.insertAdjacentHTML('beforeend', html);
         }
     }
 })();
 
+// Control
 var controller = (function (budgetCtrl, UICtrl) {
     
     var ctrlAddItem = function () {
         var userInput = UICtrl.getInput();
-        budgetCtrl.addItem(userInput.type, userInput.description, userInput.value);
+        var newItem = budgetCtrl.addItem(userInput.type, userInput.description, userInput.value);
+        UIController.render(newItem, userInput.type);
     }
 
     var setupEventListeners = function(){
