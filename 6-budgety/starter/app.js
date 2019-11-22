@@ -107,11 +107,14 @@ var UIView = (function () {
 })();
 
 // Control
-var controller = (function (bdtModel, uiViw) {
+var controller = (function (bgtModel, uiViw) {
     
     var addItem = function () {
-        var userInput = uiViw.getInputObj();
-        var newItemObj = bdtModel.addItem(userInput.type, userInput.description, userInput.value);
+        var userInput, newItemObj;
+
+        userInput = uiViw.getInputObj();
+        newItemObj = bgtModel.addItem(userInput.type, userInput.description, userInput.value);
+        
         uiViw.render(newItemObj, userInput.type);
         uiViw.clearFields();
     }
