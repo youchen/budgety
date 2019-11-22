@@ -72,6 +72,18 @@ var UIView = (function () {
                 value: document.querySelector(DOMStrings.inputValue).value
             }
         },
+        clearFields: function() {
+            var inputFieldsList, inputFieldsArr;
+            
+            inputFieldsList = document.querySelectorAll(DOMStrings.inputDescription + ', ' + DOMStrings.inputValue);
+            inputFieldsArr = Array.prototype.slice.call(inputFieldsList);
+            
+            inputFieldsArr.forEach(function(cur, index, arr) {
+                cur.value = "";
+            })
+
+            inputFieldsArr[0].focus();
+        },
         render: function(itemObj, type) {
             var htmlTemplate, html, container;
 
@@ -101,6 +113,7 @@ var controller = (function (bdtModel, uiViw) {
         var userInput = uiViw.getInputObj();
         var newItemObj = bdtModel.addItem(userInput.type, userInput.description, userInput.value);
         uiViw.render(newItemObj, userInput.type);
+        uiViw.clearFields();
     }
 
     var setupEventListeners = function(){
