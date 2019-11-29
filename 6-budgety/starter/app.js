@@ -69,7 +69,7 @@ var UIView = (function () {
             return {
                 type: document.querySelector(inputElementClasses.inputType).value,
                 description: document.querySelector(inputElementClasses.inputDescription).value,
-                value: document.querySelector(inputElementClasses.inputValue).value
+                value: parseFloat(document.querySelector(inputElementClasses.inputValue).value)
             }
         },
         clearFields: function() {
@@ -113,6 +113,9 @@ var controller = (function (bgtModel, uiViw) {
         var userInput, newItemObj;
 
         userInput = uiViw.getInputObj();
+        if (userInput.description === '' || isNaN(userInput.value) || userInput.value <= 0) {
+            return;
+        }
         newItemObj = bgtModel.addItem(userInput.type, userInput.description, userInput.value);
 
         uiViw.render(newItemObj, userInput.type);
