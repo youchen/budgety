@@ -53,7 +53,7 @@ var budgetModel = (function () {
 
 // View
 var UIView = (function () {
-    var DOMStrings = {
+    var inputElementClasses = {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
@@ -62,20 +62,20 @@ var UIView = (function () {
         expenseContainer: '.expenses__list',
     }
     return {
-        getDOMStr: function() {
-            return DOMStrings;
+        getInputElementClasses: function() {
+            return inputElementClasses;
         },
         getInputObj: function() {
             return {
-                type: document.querySelector(DOMStrings.inputType).value,
-                description: document.querySelector(DOMStrings.inputDescription).value,
-                value: document.querySelector(DOMStrings.inputValue).value
+                type: document.querySelector(inputElementClasses.inputType).value,
+                description: document.querySelector(inputElementClasses.inputDescription).value,
+                value: document.querySelector(inputElementClasses.inputValue).value
             }
         },
         clearFields: function() {
             var inputFieldsList, inputFieldsArr;
             
-            inputFieldsList = document.querySelectorAll(DOMStrings.inputDescription + ', ' + DOMStrings.inputValue);
+            inputFieldsList = document.querySelectorAll(inputElementClasses.inputDescription + ', ' + inputElementClasses.inputValue);
             inputFieldsArr = Array.prototype.slice.call(inputFieldsList);
             
             inputFieldsArr.forEach(function(cur, index, arr) {
@@ -90,11 +90,11 @@ var UIView = (function () {
             if (type === 'inc'){
                 htmlTemplate = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 
-                container = document.querySelector(DOMStrings.incomeContainer);
+                container = document.querySelector(inputElementClasses.incomeContainer);
             } else if (type === 'exp'){
                 htmlTemplate = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 
-                container = document.querySelector(DOMStrings.expenseContainer);
+                container = document.querySelector(inputElementClasses.expenseContainer);
             }
 
             html = htmlTemplate.replace('%id%', itemObj.id);
@@ -103,7 +103,7 @@ var UIView = (function () {
 
             container.insertAdjacentHTML('beforeend', html);
         }
-    }
+    } 
 })();
 
 // Control
@@ -114,13 +114,13 @@ var controller = (function (bgtModel, uiViw) {
 
         userInput = uiViw.getInputObj();
         newItemObj = bgtModel.addItem(userInput.type, userInput.description, userInput.value);
-        
+
         uiViw.render(newItemObj, userInput.type);
         uiViw.clearFields();
     }
 
     var setupEventListeners = function(){
-        var domStr = uiViw.getDOMStr();
+        var domStr = uiViw.getInputElementClasses();
         
         document.querySelector(domStr.inputButton).addEventListener('click', addItem);
     
