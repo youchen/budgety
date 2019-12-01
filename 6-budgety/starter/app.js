@@ -20,7 +20,17 @@ var budgetModel = (function () {
         allItems: {
             exp: [],
             inc: []
-        }
+        }, 
+        balance: 0,
+        percentage: -1
+    }
+
+    var calculateTotal = function (type) {
+        var sum = 0;
+        data.allItems[type].forEach(function(cur){
+            sum += cur.value;
+        });
+        data.sum[type] = sum;
     }
 
     return {
@@ -45,7 +55,29 @@ var budgetModel = (function () {
             data.allItems[type].push(newItemObj);
             return newItemObj;
         },
-        testing: function() {
+
+        calculateBudget: function() {
+            calculateTotal('inc');
+            calculateTotal('exp');
+
+            data.balance = data.sum.inc - data.sum.exp;
+
+            if (data.sum.inc !== 0){
+                data.percentage = Math.round(data.sum.exp / data.sum.inc * 100);
+            }
+        },
+
+        getBudget: function (){
+            return {
+                budget: data.budget,
+                totalInc: data.sum.inc,
+                totalExp: data.sum.exp,
+                percentage: data.percentage
+            }
+        },
+
+        //TODO: delete this line. 
+        testing: function() { 
             console.log(data);
         }
     }
@@ -108,7 +140,14 @@ var UIView = (function () {
 
 // Control
 var controller = (function (bgtModel, uiViw) {
-    
+    var updateBudget = function(){
+        bgtModel.calculateBudget();
+        var budget = bgtModel.getBudget();
+
+        //TODO: delete this line. 
+        console.log(budget); 
+    }
+
     var addItem = function () {
         var userInput, newItemObj;
 
@@ -120,8 +159,10 @@ var controller = (function (bgtModel, uiViw) {
 
         uiViw.render(newItemObj, userInput.type);
         uiViw.clearFields();
-    }
 
+        updateBudget();
+    }
+    
     var setupEventListeners = function(){
         var domStr = uiViw.getInputElementClasses();
         
