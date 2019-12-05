@@ -21,7 +21,7 @@ var budgetModel = (function () {
             exp: [],
             inc: []
         }, 
-        balance: 0,
+        budget: 0,
         percentage: -1
     }
 
@@ -60,7 +60,7 @@ var budgetModel = (function () {
             calculateTotal('inc');
             calculateTotal('exp');
 
-            data.balance = data.sum.inc - data.sum.exp;
+            data.budget = data.sum.inc - data.sum.exp;
 
             if (data.sum.inc !== 0){
                 data.percentage = Math.round(data.sum.exp / data.sum.inc * 100);
@@ -86,10 +86,16 @@ var budgetModel = (function () {
 // View
 var UIView = (function () {
     var inputElementClasses = {
+        dashboardBudget: '.budget__value',
+        dashboardIncome: '.budget__income--value',
+        dashboardExpense: '.budget__expenses--value',
+        dashboardPercentage: '.budget__expenses--percentage',
+
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
         inputButton: '.add__btn',
+
         incomeContainer: '.income__list',
         expenseContainer: '.expenses__list',
     }
@@ -115,6 +121,19 @@ var UIView = (function () {
             })
 
             inputFieldsArr[0].focus();
+        },
+        updateDashBoard: function(budget){
+            document.querySelector(inputElementClasses.dashboardBudget).textContent = budget.budget;
+            document.querySelector(inputElementClasses.dashboardIncome).textContent = budget.totalInc;
+            document.querySelector(inputElementClasses.dashboardExpense).textContent = budget.totalExp;
+            
+            var percentage = budget.percentage;
+            if (percentage <= 0) {
+                percentage = '---'
+            } else {
+                percentage += '%'
+            }
+            document.querySelector(inputElementClasses.dashboardPercentage).textContent = percentage;
         },
         render: function(itemObj, type) {
             var htmlTemplate, html, container;
@@ -143,6 +162,8 @@ var controller = (function (bgtModel, uiViw) {
     var updateBudget = function(){
         bgtModel.calculateBudget();
         var budget = bgtModel.getBudget();
+        
+        uiViw.updateDashBoard(budget);
 
         //TODO: delete this line. 
         console.log(budget); 
@@ -179,6 +200,7 @@ var controller = (function (bgtModel, uiViw) {
         init: function(){
             console.log('Application started');
             setupEventListeners();
+            updateBudget(bgtModel.getBudget());
         }
     };
 })(budgetModel, UIView);
