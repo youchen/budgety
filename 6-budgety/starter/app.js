@@ -153,7 +153,26 @@ var UIView = (function () {
         expenseContainer: '.expenses__list',
 
         expensePercentageLable: '.item__percentage'
-    }
+    };
+
+    var formatNumber = function (num, type) {
+        var unsignedRoundedNum, int, dec, numFormatted = '';
+
+        unsignedRoundedNum = Math.abs(num).toFixed(2);
+
+        int = unsignedRoundedNum.split('.')[0];
+        dec = unsignedRoundedNum.split('.')[1];
+
+        while (int.length >= 4) {
+            // 45765134234 
+            numFormatted = ',' + int.substr(int.length - 3, int.length - 1) + numFormatted;
+            int = int.substring(0, int.length - 3);
+        }
+        numFormatted = int + numFormatted;
+
+        return (type === 'exp' ? '-' : '+') + ' ' + numFormatted + '.' + dec;
+    };
+
     return {
         displayExpensePercentages: function(allExpensePercentages) {
             // 1. get list of percentages from modal
@@ -200,9 +219,9 @@ var UIView = (function () {
             inputFieldsArr[0].focus();
         },
         updateDashBoard: function(budget){
-            document.querySelector(inputElementClasses.dashboardBudget).textContent = budget.budget;
-            document.querySelector(inputElementClasses.dashboardIncome).textContent = budget.totalInc;
-            document.querySelector(inputElementClasses.dashboardExpense).textContent = budget.totalExp;
+            document.querySelector(inputElementClasses.dashboardBudget).textContent = formatNumber(budget.budget, budget.budget < 0 ? 'exp' : 'inc');
+            document.querySelector(inputElementClasses.dashboardIncome).textContent = formatNumber(budget.totalInc, 'inc');
+            document.querySelector(inputElementClasses.dashboardExpense).textContent = formatNumber(budget.totalExp, 'exp');
             
             var percentage = budget.percentage;
             if (percentage <= 0) {
@@ -210,7 +229,7 @@ var UIView = (function () {
             } else {
                 percentage += '%'
             }
-            document.querySelector(inputElementClasses.dashboardPercentage).textContent = percentage;
+            document.querySelector(inputElementClasses.dashboardPercentage).textContent = percentage; // formatNumber(percentage, percentage < 0 ? 'exp' : 'inc');;
         },
         deleteItem: function(type, id) {
             var elementToDelete = document.getElementById(id);
@@ -231,7 +250,7 @@ var UIView = (function () {
 
             html = htmlTemplate.replace('%id%', itemObj.id);
             html = html.replace('%description%', itemObj.description);
-            html = html.replace('%value%', itemObj.value);
+            html = html.replace('%value%', formatNumber(itemObj.value, type));
 
             container.insertAdjacentHTML('beforeend', html);
         }
@@ -255,7 +274,7 @@ var controller = (function (bgtModel, uiViw) {
         var allExpensePercentages = bgtModel.getExpensePercentages();
 
         uiViw.displayExpensePercentages(allExpensePercentages);
-        
+
         //TODO: debug lines, remove.
         console.log(allExpensePercentages);
     }

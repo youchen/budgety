@@ -227,7 +227,7 @@ h2 {
     background-color: #FFDAD9;
     padding: 3px;
     border-radius: 3px;
-    width: 32px;
+    min-width: 32px;
     text-align: center;
 }
 
