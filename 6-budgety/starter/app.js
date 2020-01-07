@@ -4,6 +4,19 @@ var budgetModel = (function () {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    }
+
+    Expense.prototype.calculatePercentage = function(totalIncome){
+        if (totalIncome > 0){
+            this.percentage = Math.round(this.value / totalIncome * 100);
+        } else {
+            this.percentage = -1;
+        }
+    }
+
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
     }
 
     var Income =  function(id, description, value){
@@ -65,6 +78,19 @@ var budgetModel = (function () {
             if (data.sum.inc !== 0){
                 data.percentage = Math.round(data.sum.exp / data.sum.inc * 100);
             }
+        },
+
+        calculateExpensePercentages: function (){
+            data.allItemsObj.exp.forEach(function(cur){
+                cur.calculatePercentage(data.sum.inc);
+            })
+        },
+
+        getExpensePercentages: function (){
+            var allPercentages = data.allItemsObj.exp.map(function(cur){
+                return cur.getPercentage();
+            })
+            return allPercentages;
         },
 
         getBudget: function (){
@@ -200,6 +226,14 @@ var controller = (function (bgtModel, uiViw) {
         console.log(budget); 
     }
 
+    var updateExpensePercentages = function (){
+        bgtModel.calculateExpensePercentages();
+        var allExpensePercentages = bgtModel.getExpensePercentages();
+
+        //TODO: debug lines, remove.
+        console.log(allExpensePercentages);
+    }
+
     var addItem = function () {
         var userInput, newItemObj;
 
@@ -213,6 +247,7 @@ var controller = (function (bgtModel, uiViw) {
         uiViw.clearFields();
 
         updateBudget();
+        updateExpensePercentages();
     }
     
     var setupEventListeners = function(){
@@ -254,7 +289,7 @@ var controller = (function (bgtModel, uiViw) {
         init: function(){
             //TODO: delete debugging line
             console.log('Application started');
-            
+
             setupEventListeners();
             updateBudget();
         }
