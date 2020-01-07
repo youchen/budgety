@@ -151,8 +151,32 @@ var UIView = (function () {
         container: '.container',
         incomeContainer: '.income__list',
         expenseContainer: '.expenses__list',
+
+        expensePercentageLable: '.item__percentage'
     }
     return {
+        displayExpensePercentages: function(allExpensePercentages) {
+            // 1. get list of percentages from modal
+
+            // 2. get list of expense elements 
+            var expPercentagesNodes = document.querySelectorAll(inputElementClasses.expensePercentageLable);
+
+            // 3. assign number to Expense elements list. 
+            var nodeListForEach = function(list, callback) {
+                for (let i = 0; i < list.length; i++) {
+                    callback(list[i], i);
+                }
+            };
+
+            nodeListForEach(expPercentagesNodes, function(currentNode, index) {
+                if (allExpensePercentages[index] > 0) {
+                    currentNode.textContent = allExpensePercentages[index] + ' %';
+                } else {
+                    currentNode.textContent = '-- %';
+                }
+            });
+        },
+
         getInputElementClasses: function() {
             return inputElementClasses;
         },
@@ -230,6 +254,8 @@ var controller = (function (bgtModel, uiViw) {
         bgtModel.calculateExpensePercentages();
         var allExpensePercentages = bgtModel.getExpensePercentages();
 
+        uiViw.displayExpensePercentages(allExpensePercentages);
+        
         //TODO: debug lines, remove.
         console.log(allExpensePercentages);
     }
