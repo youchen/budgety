@@ -174,6 +174,12 @@ var UIView = (function () {
         return (type === 'exp' ? '-' : '+') + ' ' + numFormatted + '.' + dec;
     };
 
+    var nodeListForEach = function(list, callback) {
+        for (let i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
+    };
+
     return {
         displayDate: function() {
             var months, now, curMonth, curYear;
@@ -185,7 +191,19 @@ var UIView = (function () {
 
             document.querySelector(inputElementClasses.dashboardMonth).textContent = curMonth + ' ' + curYear;
         },
+        alterColor: function () {
+            var inputTakers = document.querySelectorAll(
+                inputElementClasses.inputType + ',' + 
+                inputElementClasses.inputDescription + ',' + 
+                inputElementClasses.inputValue
+            );
 
+            nodeListForEach(inputTakers, function (cur, index) {
+                cur.classList.toggle('red-focus');
+            });
+            
+            document.querySelector(inputElementClasses.inputButton).classList.toggle('red');
+        },
         displayExpensePercentages: function(allExpensePercentages) {
             // 1. get list of percentages from modal
 
@@ -193,11 +211,6 @@ var UIView = (function () {
             var expPercentagesNodes = document.querySelectorAll(inputElementClasses.expensePercentageLable);
 
             // 3. assign number to Expense elements list. 
-            var nodeListForEach = function(list, callback) {
-                for (let i = 0; i < list.length; i++) {
-                    callback(list[i], i);
-                }
-            };
 
             nodeListForEach(expPercentagesNodes, function(currentNode, index) {
                 if (allExpensePercentages[index] > 0) {
@@ -318,7 +331,8 @@ var controller = (function (bgtModel, uiViw) {
             }
         });
 
-        document.querySelector(domStr.container).addEventListener('click', deleteItem)
+        document.querySelector(domStr.container).addEventListener('click', deleteItem);
+        document.querySelector(domStr.inputType).addEventListener('change', uiViw.alterColor);
     }
 
     var deleteItem = function (event) {
