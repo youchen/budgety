@@ -138,6 +138,7 @@ var budgetModel = (function () {
 // View
 var UIView = (function () {
     var inputElementClasses = {
+        dashboardMonth: '.budget__title--month',
         dashboardBudget: '.budget__value',
         dashboardIncome: '.budget__income--value',
         dashboardExpense: '.budget__expenses--value',
@@ -174,6 +175,17 @@ var UIView = (function () {
     };
 
     return {
+        displayDate: function() {
+            var months, now, curMonth, curYear;
+            months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            now = new Date();
+
+            curMonth = months[now.getMonth()];
+            curYear = now.getFullYear();
+
+            document.querySelector(inputElementClasses.dashboardMonth).textContent = curMonth + ' ' + curYear;
+        },
+
         displayExpensePercentages: function(allExpensePercentages) {
             // 1. get list of percentages from modal
 
@@ -335,6 +347,7 @@ var controller = (function (bgtModel, uiViw) {
             //TODO: delete debugging line
             console.log('Application started');
 
+            uiViw.displayDate();
             setupEventListeners();
             updateBudget();
         }
